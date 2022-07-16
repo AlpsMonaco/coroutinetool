@@ -1,0 +1,29 @@
+{
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "build",
+			"command": "cl.exe",
+			"args": [
+				"/Zi",
+				"/EHsc",
+				"/MDd",
+				"/nologo",
+				"/std:c++20",
+				"/Fe${workspaceFolder}\\main.exe",
+				"${workspaceFolder}\\main.cpp"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	],
+	"version": "2.0.0"
+}
