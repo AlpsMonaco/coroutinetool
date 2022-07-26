@@ -32,7 +32,24 @@ public:
     };
     using handle_type = std::coroutine_handle<promise_type>;
     AsyncExecutor(handle_type handle) : handle_(handle) {}
-    ~AsyncExecutor() { handle_.destroy(); }
+    AsyncExecutor(const AsyncExecutor &rhs) : handle_(rhs.handle_) {}
+    AsyncExecutor(AsyncExecutor &&rhs) : handle_(rhs.handle_) { rhs.handle_ = nullptr; }
+    AsyncExecutor &operator=(const AsyncExecutor &rhs)
+    {
+        handle_ = rhs.handle_;
+        return *this;
+    }
+    AsyncExecutor &operator=(AsyncExecutor &&rhs)
+    {
+        handle_ = rhs.handle_;
+        rhs.handle_ = nullptr;
+        return *this;
+    }
+    ~AsyncExecutor()
+    {
+        if (handle_ != nullptr)
+            handle_.destroy();
+    }
     explicit operator bool()
     {
         handle_.resume();

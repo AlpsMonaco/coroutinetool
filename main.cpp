@@ -6,7 +6,11 @@ using namespace coroutinetool;
 
 int main(int argc, char **argv)
 {
-    auto ae = AsyncExecutor::Run("ping github.com");
+    auto ae = AsyncExecutor::Run("ipconfig");
+    while (ae)
+        cout << ae();
+    cout << "return code is: " << ae.Code() << endl;
+    ae = AsyncExecutor::Run("ipconfig");
     while (ae)
         cout << ae();
     cout << "return code is: " << ae.Code() << endl;
