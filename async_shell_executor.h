@@ -18,7 +18,7 @@ public:
         AsyncExecutor get_return_object() { return AsyncExecutor(handle_type::from_promise(*this)); }
         std::suspend_always initial_suspend() { return {}; }
         std::suspend_always final_suspend() noexcept { return {}; }
-        std::suspend_always yield_value(const char *p_msg)
+        std::suspend_always yield_value(const char* p_msg)
         {
             p_msg_ = p_msg;
             return {};
@@ -26,22 +26,30 @@ public:
         void unhandled_exception() { exception_ = std::current_exception(); }
         void return_value(int code) { return_code_ = code; }
 
-        const char *p_msg_;
+        const char* p_msg_;
         std::exception_ptr exception_;
         int return_code_;
     };
     using handle_type = std::coroutine_handle<promise_type>;
     AsyncExecutor(handle_type handle) : handle_(handle) {}
-    AsyncExecutor(const AsyncExecutor &rhs) : handle_(rhs.handle_) {}
-    AsyncExecutor(AsyncExecutor &&rhs) : handle_(rhs.handle_) { rhs.handle_ = nullptr; }
-    AsyncExecutor &operator=(const AsyncExecutor &rhs)
+    AsyncExecutor(const AsyncExecutor& rhs) : handle_(rhs.handle_) {}
+    AsyncExecutor(AsyncExecutor&& rhs) : handle_(rhs.handle_) { rhs.handle_ = nullptr; }
+    AsyncExecutor& operator=(const AsyncExecutor& rhs)
     {
+        if (handle_ != nullptr)
+        {
+            handle_.destroy();
+        }
         handle_ = rhs.handle_;
         return *this;
     }
-    AsyncExecutor &operator=(AsyncExecutor &&rhs)
+    AsyncExecutor& operator=(AsyncExecutor&& rhs)
     {
-        handle_ = rhs.handle_;
+        if (handle_ != nullptr)
+        {
+            handle_.destroy();
+        }
+        handle_     = rhs.handle_;
         rhs.handle_ = nullptr;
         return *this;
     }
@@ -57,10 +65,10 @@ public:
     }
 
     int Code() { return handle_.promise().return_code_; }
-    static AsyncExecutor Run(const char *command)
+    static AsyncExecutor Run(const char* command)
     {
-        FILE *fp = NULL;
-        fp = popen(command, "r");
+        FILE* fp = NULL;
+        fp       = popen(command, "r");
         if (fp == NULL)
             co_return -1;
         static constexpr size_t buffer_size = 128;
@@ -70,7 +78,7 @@ public:
         co_return pclose(fp);
     }
 
-    const char *operator()()
+    const char* operator()()
     {
         return handle_.promise().p_msg_;
     }
