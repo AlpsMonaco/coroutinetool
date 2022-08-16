@@ -1,6 +1,8 @@
 # coroutinetool
 functional c++ tiny lib based on c++20 coroutine,for learning and utility purpose.
 
+currently a async shell executor implemented.You could run system command in place with calling `fgets` etc...  
+
 ## Start
 
 ```c++
